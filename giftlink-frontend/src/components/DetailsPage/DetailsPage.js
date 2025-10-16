@@ -21,7 +21,8 @@ function DetailsPage() {
         const fetchGift = async () => {
             try {
 				// Task 2: Fetch gift details
-                const response = await fetch(`${urlConfig.backendUrl}/api/gifts/${productId}`);
+                const url = `${urlConfig.backendUrl}/api/gifts/${productId}`;
+                const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -39,7 +40,7 @@ function DetailsPage() {
 		// Task 3: Scroll to top on component mount
 		window.scrollTo(0, 0);
 
-    }, [productId]);
+    }, [productId, navigate]);
 
 
     const handleBackClick = () => {
@@ -93,11 +94,21 @@ return (
                         )}
                     </div>
                     {/* Task 6: Display gift details */}
-                    	<p><strong>Category:</strong> {gift.category}</p>
-                    	<p><strong>Condition:</strong> {gift.condition}</p>
-                    	<p><strong>Date Added:</strong> {new Date(gift.date_added * 1000).toLocaleDateString()}</p>
-                    	<p><strong>Age (Years):</strong> {gift.age_years}</p>
-                    	<p><strong>Description:</strong> {gift.description || 'No description available'}</p>
+                    	<p><strong>Category:</strong> 
+				{gift.category}
+			</p>
+                    	<p><strong>Condition:</strong> 
+				{gift.condition}
+                    	</p>
+                    	<p><strong>Date Added:</strong> 
+				{gift.dateAdded}
+                        </p>
+                    	<p><strong>Age (Years):</strong> 
+				{gift.age}
+                    	</p>
+                    	<p><strong>Description:</strong> 
+				{gift.description}
+                    	</p>
                 </div>
             </div>
             <div className="comments-section mt-4">

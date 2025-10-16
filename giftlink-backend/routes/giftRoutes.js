@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../logger');
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         // Task 1: Connect to MongoDB and store connection to db constant
         const db = await connectToDatabase();
@@ -18,12 +18,12 @@ router.get('/', async (req, res) => {
         // Task 4: return the gifts using the res.json method
         res.json(gifts);
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        console.error('oops something went wrong', e)
         next(e);
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
     try {
         // Task 1: Connect to MongoDB and store connection to db constant
         const db = await connectToDatabase();
