@@ -2,7 +2,6 @@ const { ObjectId } = require('mongodb');
 const connectToDatabase = require('../models/db');
 const express = require('express');
 const router = express.Router();
-const logger = require('../logger');
 
 router.get('/', async (req, res, next) => {
     try {
@@ -18,7 +17,7 @@ router.get('/', async (req, res, next) => {
         // Task 4: return the gifts using the res.json method
         res.json(gifts);
     } catch (e) {
-        console.error('oops something went wrong', e)
+        console.error('oops something went wrong', e);
         next(e);
     }
 });
