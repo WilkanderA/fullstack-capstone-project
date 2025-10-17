@@ -1,0 +1,18 @@
+{
+  "esversion": 6,
+  "node": true,
+  "strict": false,
+  "globalstrict": false,
+  "undef": true,
+  "unused": true,
+  "predef": [
+    "console",
+    "module",
+    "require",
+    "exports",
+    "__dirname",
+    "__filename",
+    "process",
+    "global"
+  ]
+}
