@@ -1,14 +1,70 @@
 import React, { useState,useEffect } from 'react';
 import './LoginPage.css';
+import {urlConfig} from '../../config';
+import { useAppContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     // Create useState hook variables for email, password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [incorrect, setIncorrect] = useState('');
+
+    const navigate = useNavigate();
+    const bearerToken = sessionStorage.getItem('auth-token');
+    const { setIsLoggedIn } = useAppContext();
+
+    useEffect(() => {
+      if (sessionStorage.getItem('auth-token')) {
+        navigate('/app')
+      }
+    }, [navigate])
 
     const handleLogin = async (e) => {
         e.preventDefault();
-}
+        try{
+          const response = await fetch(`${urlConfig.backendUrl}/api/auth/login`, {
+               method: 'POST',
+               headers: {
+                   'content-type': 'application/json',
+                   'Authorization': bearerToken ? `Bearer ${bearerToken}` : '',
+               },
+               body: JSON.stringify({    
+                   email: email,
+                   password: password,
+               })
+         })
+         
+         // Task 1: Access data coming from fetch API
+         const json = await response.json();
+         
+         if (json.authtoken) {
+             // Task 2: Set user details
+             sessionStorage.setItem('auth-token', json.authtoken);
+             sessionStorage.setItem('name', json.userName);
+             sessionStorage.setItem('email', json.userEmail);
+             
+             // Task 3: Set the state of user to logged in using the useAppContext
+             setIsLoggedIn(true);
+             
+             // Task 4: Navigate to the MainPage after logging in
+             navigate('/app');
+         } else {
+             // Task 5: Clear input and set an error message if the password is incorrect
+             document.getElementById("email").value="";
+             document.getElementById("password").value="";
+             setIncorrect("Wrong password. Try again.");
+             
+             // Clear out error message after 2 seconds
+             setTimeout(() => {
+               setIncorrect("");
+             }, 2000);
+         }
+         
+          }catch (e) {
+            console.log("Error fetching details: " + e.message);
+        }
+    }
 
     return (
         <div className="container mt-5">
@@ -40,6 +96,7 @@ function LoginPage() {
                             />
                         </div>
                         {/* Include appropriate error message if login is incorrect*/}
+                        <span style={{color:'red',height:'.5cm',display:'block',fontStyle:'italic',fontSize:'12px'}}>{incorrect}</span>
 
                         <button className="btn btn-primary w-100 mb-3" onClick={handleLogin}>Login</button>
 
