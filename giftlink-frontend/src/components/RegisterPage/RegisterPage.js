@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
+import {urlConfig} from '../../config';
+import { useAppContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
     // Create useState hook variables for firstName, lastName, email, password
@@ -7,9 +10,50 @@ function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showerr, setShowerr] = useState('');
+
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useAppContext();
 
     const handleRegister = async () => {
-        console.log("Register invoked")
+        try{
+          const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+               method: 'POST',
+               headers: {
+                   'content-type': 'application/json',
+               },
+               body: JSON.stringify({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            password: password
+                        })
+         })
+         
+         // Task 1: Access data coming from fetch API
+         const json = await response.json();
+         
+         if (json.authtoken) {
+             // Task 2: Set user details
+             sessionStorage.setItem('auth-token', json.authtoken);
+             sessionStorage.setItem('name', firstName);
+             sessionStorage.setItem('email', json.email);
+             
+             // Task 3: Set the state of user to logged in using the useAppContext
+             setIsLoggedIn(true);
+             
+             // Task 4: Navigate to the MainPage after logging in
+             navigate('/app');
+         }
+         
+         // Task 5: Set an error message if the registration fails
+         if (json.error) {
+             setShowerr(json.error);
+         }
+         
+          }catch (e) {
+            console.log("Error fetching details: " + e.message);
+        }
     }
 
     return (
@@ -67,6 +111,8 @@ function RegisterPage() {
                     </div>
 
                     <button className="btn btn-primary w-100 mb-3" onClick={handleRegister}>Register</button>
+                    
+                    {showerr && <div className="text-danger">{showerr}</div>}
 
                         <p className="mt-4 text-center">
                             Already a member? <a href="/app/login" className="text-primary">Login</a>
