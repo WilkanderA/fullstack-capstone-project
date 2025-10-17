@@ -3,7 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 // MongoDB connection URL
 let url = `${process.env.MONGO_URL}`;
-const dbName = 'giftdb';
+const dbName = 'giftsdb';
 const collectionName = 'gifts';
 
 async function countGifts() {

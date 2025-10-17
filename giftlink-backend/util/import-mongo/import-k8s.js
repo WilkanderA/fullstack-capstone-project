@@ -1,9 +1,8 @@
-require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 
-// MongoDB connection URL with authentication options
-let url = `${process.env.MONGO_URL}`;
+// Use port-forwarded MongoDB connection
+let url = 'mongodb://localhost:27017';
 let filename = `${__dirname}/gifts.json`;
 const dbName = 'giftsdb';
 const collectionName = 'gifts';
@@ -25,16 +24,14 @@ async function loadData() {
 
         // collection will be created if it does not exist
         const collection = db.collection(collectionName);
-        let cursor = await collection.find({});
-        let documents = await cursor.toArray();
+        
+        // Clear existing data first
+        await collection.deleteMany({});
+        console.log("Cleared existing data");
 
-        if(documents.length == 0) {
-            // Insert data into the collection
-            const insertResult = await collection.insertMany(data);
-            console.log('Inserted documents:', insertResult.insertedCount);
-        } else {
-            console.log("Gifts already exists in DB")
-        }
+        // Insert data into the collection
+        const insertResult = await collection.insertMany(data);
+        console.log('Inserted documents:', insertResult.insertedCount);
     } catch (err) {
         console.error(err);
     } finally {
@@ -44,7 +41,3 @@ async function loadData() {
 }
 
 loadData();
-
-module.exports = {
-    loadData,
-  };
